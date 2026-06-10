@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "redfish-test-tool"
+version = "0.1.0"
+description = "BMC Redfish API automation testing tool for Windows"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "requests>=2.31",
+    "PyYAML>=6.0",
+    "Jinja2>=3.1",
+    "colorama>=0.4.6",
+]
+
+[project.scripts]
+redfish-test = "redfish_test_tool.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["redfish_test_tool*"]
+
+[tool.setuptools.package-data]
+"redfish_test_tool.reporting" = ["templates/*.j2"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = [
+    "ignore::pytest.PytestCollectionWarning",
+]

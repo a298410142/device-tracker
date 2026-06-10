@@ -1,0 +1,27 @@
+# Redfish 測試工具設定檔範例
+# 複製為 config.yaml 後修改。CLI 參數的優先順序高於此設定檔。
+
+bmc:
+  host: 192.168.0.120        # BMC IP 或主機名稱
+  port: 443                  # HTTPS 連接埠
+  username: admin
+  # password: "secret"       # 建議改用環境變數 REDFISH_PASSWORD,或執行時互動輸入
+  auth: session              # session(預設,使用 X-Auth-Token)或 basic
+
+ssl_verify: false            # BMC 多為自簽憑證,預設不驗證
+timeout: 30                  # 單一 HTTP 請求逾時(秒)
+
+# 要執行的測試套件:basic / sensors / power / accounts
+# power 套件還需要在 CLI 加上 --include-power-tests 才會真正執行
+suites:
+  - basic
+  - sensors
+  - accounts
+
+power:
+  power_timeout: 300         # 等待 PowerState 轉換的逾時(秒)
+  boot_wait: 60              # 開機後等待 OS 穩定的秒數(重啟測試前)
+
+output:
+  dir: reports               # 報告輸出目錄(每次執行建立時間戳記子目錄)
+  lang: zh-TW                # HTML 報告語言:zh-TW 或 en

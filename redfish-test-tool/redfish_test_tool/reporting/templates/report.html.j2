@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8">
+<title>{{ labels.title }}</title>
+<style>
+  body { font-family: "Segoe UI", "Microsoft JhengHei", sans-serif; margin: 2rem; color: #222; background: #f7f8fa; }
+  h1 { font-size: 1.6rem; }
+  h2 { font-size: 1.2rem; margin-top: 2rem; }
+  table { border-collapse: collapse; width: 100%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  th, td { border: 1px solid #ddd; padding: .5rem .75rem; text-align: left; font-size: .9rem; vertical-align: top; }
+  th { background: #2c3e50; color: #fff; }
+  .kv th { width: 12rem; background: #34495e; }
+  .badge { display: inline-block; padding: .15rem .6rem; border-radius: .8rem; color: #fff; font-weight: 600; font-size: .8rem; }
+  .PASS { background: #27ae60; } .FAIL { background: #e74c3c; }
+  .ERROR { background: #8e44ad; } .SKIP { background: #f39c12; }
+  .summary-cards { display: flex; gap: 1rem; margin: 1rem 0; flex-wrap: wrap; }
+  .card { background: #fff; border-radius: .5rem; padding: .8rem 1.4rem; box-shadow: 0 1px 3px rgba(0,0,0,.08); min-width: 7rem; text-align: center; }
+  .card .num { font-size: 1.8rem; font-weight: 700; }
+  .card.pass .num { color: #27ae60; } .card.fail .num { color: #e74c3c; }
+  .card.error .num { color: #8e44ad; } .card.skip .num { color: #f39c12; }
+  details { margin: 0; } summary { cursor: pointer; color: #2980b9; font-size: .85rem; }
+  .step-ok { color: #27ae60; } .step-bad { color: #e74c3c; font-weight: 600; }
+  ul.steps { margin: .4rem 0 0 1rem; padding: 0; font-size: .85rem; }
+  ul.steps li { margin-bottom: .25rem; list-style: none; }
+  .meta { color: #777; font-size: .85rem; }
+</style>
+</head>
+<body>
+<h1>{{ labels.title }}</h1>
+<p class="meta">{{ labels.generated }}: {{ generated }}</p>
+
+<h2>{{ labels.environment }}</h2>
+<table class="kv">
+  {% for key, value in environment.items() %}
+  <tr><th>{{ key }}</th><td>{{ value }}</td></tr>
+  {% endfor %}
+</table>
+
+<h2>{{ labels.summary }}</h2>
+<div class="summary-cards">
+  <div class="card"><div class="num">{{ counts.values() | sum }}</div>{{ labels.total }}</div>
+  <div class="card pass"><div class="num">{{ counts.PASS }}</div>{{ labels.pass }}</div>
+  <div class="card fail"><div class="num">{{ counts.FAIL }}</div>{{ labels.fail }}</div>
+  <div class="card error"><div class="num">{{ counts.ERROR }}</div>{{ labels.error }}</div>
+  <div class="card skip"><div class="num">{{ counts.SKIP }}</div>{{ labels.skip }}</div>
+</div>
+
+<h2>{{ labels.results }}</h2>
+<table>
+  <tr>
+    <th>{{ labels.test_id }}</th>
+    <th>{{ labels.suite }}</th>
+    <th>{{ labels.test_name }}</th>
+    <th>{{ labels.status }}</th>
+    <th>{{ labels.duration }}</th>
+    <th>{{ labels.reason }} / {{ labels.steps }}</th>
+  </tr>
+  {% for r in results %}
+  <tr>
+    <td>{{ r.test_id }}</td>
+    <td>{{ r.suite }}</td>
+    <td>{{ r.name }}</td>
+    <td><span class="badge {{ r.status }}">{{ r.status }}</span></td>
+    <td>{{ "%.2f" | format(r.duration) }}</td>
+    <td>
+      {% if r.reason %}<div>{{ r.reason }}</div>{% endif %}
+      {% if r.steps %}
+      <details>
+        <summary>{{ labels.steps }} ({{ r.steps | length }})</summary>
+        <ul class="steps">
+          {% for s in r.steps %}
+          <li class="{{ 'step-ok' if s.ok else 'step-bad' }}">
+            {{ '✔' if s.ok else '✘' }} {{ s.message }}
+            {% if s.expected or s.actual %}
+              <br>&nbsp;&nbsp;{{ labels.expected }}: {{ s.expected }} | {{ labels.actual }}: {{ s.actual }}
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+      </details>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+</body>
+</html>

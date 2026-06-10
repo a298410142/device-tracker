@@ -1,0 +1,5 @@
+# Development / build dependencies
+-r requirements.txt
+pytest>=8.0
+responses>=0.25
+pyinstaller>=6.0
